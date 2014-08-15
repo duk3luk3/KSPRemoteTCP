@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using JoystickTool.JoystickBinding;
 
 namespace JoystickTool.GUI
 {
@@ -23,6 +24,43 @@ namespace JoystickTool.GUI
         public JoystickControl()
         {
             InitializeComponent();
+        }
+
+        List<AxisControl> axctrls = new List<AxisControl>();
+
+        public void Load(ManagedJoystick joystick)
+        {
+            var caps = joystick.Capabilities;
+
+            if (caps.X)
+            {
+                axctrls.Add(new AxisControl(joystick, UsagePage.X));
+            }
+            if (caps.Y)
+            {
+                axctrls.Add(new AxisControl(joystick, UsagePage.Y));
+            }
+            if (caps.Z)
+            {
+                axctrls.Add(new AxisControl(joystick, UsagePage.Z));
+            }
+            if (caps.RotX)
+            {
+                axctrls.Add(new AxisControl(joystick, UsagePage.Rx));
+            }
+            if (caps.RotY)
+            {
+                axctrls.Add(new AxisControl(joystick, UsagePage.Ry));
+            }
+            if (caps.RotZ)
+            {
+                axctrls.Add(new AxisControl(joystick, UsagePage.Rz));
+            }
+
+            foreach (var x in axctrls)
+            {
+                Panel.Children.Add(x);
+            }
         }
     }
 }

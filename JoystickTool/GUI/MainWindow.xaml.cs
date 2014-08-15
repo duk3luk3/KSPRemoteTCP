@@ -15,6 +15,8 @@ using System.Windows.Shapes;
 using JoystickTool.JoystickBinding;
 using System.Windows.Threading;
 using System.Windows.Interop;
+using SlimDX.DirectInput;
+using JoystickTool.GUI;
 
 namespace JoystickTool
 {
@@ -28,6 +30,8 @@ namespace JoystickTool
             InitializeComponent();
         }
 
+
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var sticks = ManagedJoystick.EnumAll();
@@ -38,11 +42,18 @@ namespace JoystickTool
                     tbLog.Text += s.Name + "\n";
                 }
                 s.OnJoystickEvent += JoyEvent;
+
+                var ctrl = new JoystickControl();
+                ctrl.Load(s);
+                JoystickPanel.Children.Add(ctrl);
+
             }
             tbLog.Text += "\n";
+
+            BeamNGPanel.JoystickSelectBox.ItemsSource = sticks;
         }
 
-        private void JoyEvent(ManagedJoystick sender)
+        private void JoyEvent(ManagedJoystick sender, JoystickState state)
         {
 
             tbLog.Dispatcher.Invoke(
@@ -52,9 +63,10 @@ namespace JoystickTool
                     {
                         //tbLog.Text = sender.Name + " " + sender.State.X + "\n";
                         tbLog.Text = tbLog.Text + sender.ReadProps();
-
                     }
             ));
+
+            sender.OnJoystickEvent -= JoyEvent;
         }
     }
 }
