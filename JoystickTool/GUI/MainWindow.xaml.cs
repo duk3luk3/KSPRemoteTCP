@@ -30,11 +30,11 @@ namespace JoystickTool
             InitializeComponent();
         }
 
-
-
+        IEnumerable<ManagedJoystick> sticks = null;
+        
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var sticks = ManagedJoystick.EnumAll();
+            sticks = ManagedJoystick.EnumAll();
             foreach (var s in sticks)
             {
                 if (s.Acquire(new WindowInteropHelper(this).Handle))
@@ -67,6 +67,16 @@ namespace JoystickTool
             ));
 
             sender.OnJoystickEvent -= JoyEvent;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (sticks != null)
+            {
+                foreach(var s in sticks) {
+                    s.appClosing = true;
+                }
+            }
         }
     }
 }

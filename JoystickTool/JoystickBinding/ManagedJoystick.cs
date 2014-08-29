@@ -94,17 +94,18 @@ namespace JoystickTool.JoystickBinding
         private JoyStickRange range = new JoyStickRange();
         public JoyStickRange Ranges { get { return range; } }
 
+        public bool appClosing = false;
+
         static void Device_JoystickInput(object self) //object sender, EventArgs e)
         {
             ManagedJoystick j = (ManagedJoystick)self;
-            bool appClosing = false;
 
             var axisObjects = j.joystick.GetObjects().Where(doi => (doi.ObjectType & ObjectDeviceType.Axis) != 0);
 
-            while (!appClosing)
+            while (!j.appClosing)
             {
                 joyEvent.WaitOne();
-                if (!appClosing)
+                if (!j.appClosing)
                 {
                     if (j.OnJoystickEvent != null)
                     {
@@ -113,6 +114,8 @@ namespace JoystickTool.JoystickBinding
                     }
                 }
             }
+
+            j.joystick.Unacquire();
         }
 
         public static string ParseObjectType(ObjectDeviceType type)
